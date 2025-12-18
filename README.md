@@ -42,3 +42,49 @@ A scalable, event-driven microservices architecture simulating a real-world e-co
 ```bash
 git clone [https://github.com/YOUR_USERNAME/order-delivery-microservices.git](https://github.com/YOUR_USERNAME/order-delivery-microservices.git)
 cd order-delivery-microservices
+
+```
+---
+### 2. ⚡ Quick Start
+1. `docker-compose up -d`
+2. Run `OrderServiceApplication` and `TrackingServiceApplication`.
+
+### 🔌 API Endpoints & Testing
+1. Place an Order (POST)
+URL: http://localhost:8080/api/orders
+
+```Bash
+
+curl -X POST http://localhost:8080/api/orders \
+-H "Content-Type: application/json" \
+-d '{"product": "MacBook Pro", "price": 2500.00}'
+```
+2. Track Order Status (GET)
+URL: http://localhost:8081/api/tracking/{orderId} Immediately after ordering, this will return "PROCESSING". Wait 5 seconds, and it updates to "SHIPPED".
+
+```Bash
+
+curl http://localhost:8081/api/tracking/1
+```
+3. Get All Orders (GET)
+URL: http://localhost:8080/api/orders Check the PostgreSQL records to see the status automatically updated via Kafka.
+```
+
+Bash
+
+curl http://localhost:8080/api/orders
+```
+📂 Project Structure
+Plaintext
+
+order-delivery-system/
+├── docker-compose.yml       # Infrastructure (Kafka, Postgres, Redis)
+├── order-service/           # Producer | Write-Heavy | Postgres
+│   ├── src/.../OrderService.java  # Circuit Breaker & Kafka Publisher
+│   └── src/.../OrderStatusListener.java # Kafka Consumer (Feedback loop)
+└── tracking-service/        # Consumer | Read-Heavy | Redis
+    ├── src/.../TrackingService.java # @Async Processing & Redis Caching
+    └── src/.../OrderEventListener.java # Kafka Consumer
+
+### 🤝 Contributing
+Feel free to fork this project and submit a pull request if you want to add features like Security (JWT) or Kubernetes deployment.
